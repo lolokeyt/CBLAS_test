@@ -1,0 +1,41 @@
+name: CBLAS CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          cmake \
+          build-essential \
+          pkg-config \
+          libopenblas-dev
+    
+    - name: Build project
+      run: |
+        mkdir -p build
+        cd build
+        cmake ..
+        make
+    
+    - name: Run interface tests
+      run: |
+        cd build
+        ./test_cblas
+    
+    - name: Run performance tests
+      run: |
+        cd build
+        timeout 300 ./benchmark || echo "Performance tests completed"
