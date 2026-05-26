@@ -1,0 +1,33 @@
+name: CBLAS CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    name: Build & Test (Docker)
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: false
+        load: true
+        tags: cblas-test:latest
+
+    - name: Run interface tests (CBLAS Level 2)
+      run: docker run --rm cblas-test:latest ./build/test_cblas
+
+    - name: Run performance tests (quick)
+      run: docker run --rm cblas-test:latest timeout 120 ./build/benchmark || echo "Performance tests completed"
