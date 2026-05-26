@@ -1,0 +1,11 @@
+build/
+*.exe
+*.o
+*.a
+*.so
+test_cblas
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+*.log
